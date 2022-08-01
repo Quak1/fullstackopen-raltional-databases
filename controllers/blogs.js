@@ -8,28 +8,20 @@ const getBlog = async (req, _res, next) => {
   next();
 };
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   const blogs = await Blog.findAll();
   res.json(blogs);
 });
 
 router.post("/", async (req, res) => {
-  try {
-    const blog = await Blog.create(req.body);
-    res.json(blog);
-  } catch (e) {
-    return res.status(400).json(e);
-  }
+  const blog = await Blog.create(req.body);
+  res.json(blog);
 });
 
 router.delete("/:id", getBlog, async (req, res) => {
   if (req.blog) {
-    try {
-      await req.blog.destroy();
-      res.sendStatus(200);
-    } catch (e) {
-      return res.status(400).json(e);
-    }
+    await req.blog.destroy();
+    res.sendStatus(200);
   } else {
     res.sendStatus(404);
   }
@@ -41,12 +33,8 @@ router.put("/:id", getBlog, async (req, res) => {
 
   if (blog) {
     blog.likes = likes;
-    try {
-      await blog.save();
-      res.json({ likes: blog.likes });
-    } catch (e) {
-      res.status(400).json(e);
-    }
+    await blog.save();
+    res.json({ likes: blog.likes });
   } else {
     res.sendStatus(404);
   }
