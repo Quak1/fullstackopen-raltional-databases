@@ -8,9 +8,11 @@ const { connectToDatabase } = require("./util/db");
 const { errorHandler } = require("./controllers/middleware");
 
 const blogsRouter = require("./controllers/blogs");
+const usersRouter = require("./controllers/users");
 
 app.use(express.json());
 app.use("/api/blogs", blogsRouter);
+app.use("/api/users", usersRouter);
 app.use(errorHandler);
 
 const start = async () => {

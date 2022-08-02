@@ -1,5 +1,5 @@
 const errorHandler = (error, _request, response, next) => {
-  console.error("errorHandler:", error.message);
+  console.error("errorHandler:", error.name, "|", error.message);
 
   if (error.name === "SequelizeValidationError") {
     return response.status(400).send({ error: "malformatted body" });
