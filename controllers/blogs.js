@@ -15,7 +15,6 @@ const tokenExtractor = (req, res, next) => {
   if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
     try {
       req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-      console.log(req.decodedToken);
     } catch {
       res.status(401).json({ error: "token invalid" });
     }
@@ -36,10 +35,14 @@ router.post("/", tokenExtractor, async (req, res) => {
   res.json(blog);
 });
 
-router.delete("/:id", getBlog, async (req, res) => {
+router.delete("/:id", getBlog, tokenExtractor, async (req, res) => {
   if (req.blog) {
-    await req.blog.destroy();
-    res.sendStatus(200);
+    if (req.blog.userId === req.decodedToken.id) {
+      await req.blog.destroy();
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
+    }
   } else {
     res.sendStatus(404);
   }
