@@ -24,17 +24,26 @@ const tokenExtractor = (req, res, next) => {
   next();
 };
 
+// Show all blogs
 router.get("/", async (_req, res) => {
-  const blogs = await Blog.findAll();
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ["userId"] },
+    include: {
+      model: User,
+      attributes: ["name"],
+    },
+  });
   res.json(blogs);
 });
 
+// Create new blog
 router.post("/", tokenExtractor, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id);
   const blog = await Blog.create({ ...req.body, userId: user.id });
   res.json(blog);
 });
 
+// Delete a blog
 router.delete("/:id", getBlog, tokenExtractor, async (req, res) => {
   if (req.blog) {
     if (req.blog.userId === req.decodedToken.id) {
@@ -48,6 +57,7 @@ router.delete("/:id", getBlog, tokenExtractor, async (req, res) => {
   }
 });
 
+// Edit likes in a blog
 router.put("/:id", getBlog, async (req, res) => {
   const { blog } = req;
   const { likes } = req.body;
