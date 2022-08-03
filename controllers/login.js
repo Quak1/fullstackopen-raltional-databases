@@ -9,6 +9,10 @@ router.post("/", async (req, res) => {
   const { username, password } = req.body;
 
   const user = await User.findOne({ where: { username } });
+
+  if (user.disabled)
+    return res.status(401).json({ error: "your account has been disabled" });
+
   const passwordCorrect = password === "password";
 
   if (!(user && passwordCorrect)) {
