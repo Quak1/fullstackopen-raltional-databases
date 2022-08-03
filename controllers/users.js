@@ -13,6 +13,28 @@ router.get("/", async (_req, res) => {
   res.json(users);
 });
 
+// Get user by id
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const users = await User.findByPk(id, {
+    attributes: ["name", "username"],
+    include: [
+      {
+        model: Blog,
+        as: "reading_blogs",
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "userId"],
+        },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+  });
+
+  res.json(users);
+});
+
 // Create new user
 router.post("/", async (req, res) => {
   const user = await User.create(req.body);
